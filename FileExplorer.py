@@ -4,8 +4,8 @@ from tkinter import filedialog
 from PIL import Image, ImageTk
 from tkinter import simpledialog
 import os
-import threading
-
+import subprocess
+import platform
 
 global DIRECTORY_PATH
 global INITIAL_DIRECTORY_PATH, IconsDirectory
@@ -75,14 +75,24 @@ class UserInterfaceFrontend:
                     if os.path.exists(new_directory) and os.path.isdir(new_directory):
                         DIRECTORY_PATH = new_directory
                         self.master.update_files(os.listdir(DIRECTORY_PATH))
-                        self.master.master.rearrange_cards(None)  # Update the card layout
-                        self.master.master.create_back_button()  # Show the back button again
+                        self.master.rearrange_cards(None)  # Update the card layout
+                        self.master.create_back_button()  # Show the back button again
                         print(f"Change directory to: {DIRECTORY_PATH}")
                     else:
                         print(f"Folder does not exist: {new_directory}")
                 else:
-                    print(f"Open file: {self.name}")
-                    # Add the code to handle file opening here
+                    file_path = os.path.join(DIRECTORY_PATH, self.name)
+                    try:
+                        if platform.system() == "Windows":
+                            # On Windows, use the 'start' command to open files with spaces
+                            subprocess.run(["start", "", file_path], shell=True)
+                        else:
+                            # On macOS and Linux, use 'open' to open the file
+                            subprocess.run(["open", file_path])
+                        print(f"Open file: {self.name}")
+                    except Exception as e:
+                        print(f"Error opening file {self.name}: {e}")
+
             self.click_num = 0
             self.click_timer = None
 
