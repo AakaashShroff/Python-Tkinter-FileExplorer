@@ -70,28 +70,31 @@ class UserInterfaceFrontend:
                 self.select()
                 print(f"Single clicked: {self.name}")
             elif self.click_num == 2:
-                if self.file_type == 'folder':
-                    new_directory = os.path.join(DIRECTORY_PATH, self.name)
-                    if os.path.exists(new_directory) and os.path.isdir(new_directory):
-                        DIRECTORY_PATH = new_directory
-                        self.master.update_files(os.listdir(DIRECTORY_PATH))
-                        self.master.rearrange_cards(None)  # Update the card layout
-                        self.master.create_back_button()  # Show the back button again
-                        print(f"Change directory to: {DIRECTORY_PATH}")
-                    else:
-                        print(f"Folder does not exist: {new_directory}")
-                else:
-                    file_path = os.path.join(DIRECTORY_PATH, self.name)
-                    try:
-                        if platform.system() == "Windows":
-                            # On Windows, use the 'start' command to open files with spaces
-                            subprocess.run(["start", "", file_path], shell=True)
+                try:
+                    if self.file_type == 'folder':
+                        new_directory = os.path.join(DIRECTORY_PATH, self.name)
+                        if os.path.exists(new_directory) and os.path.isdir(new_directory):
+                            DIRECTORY_PATH = new_directory
+                            self.master.update_files(os.listdir(DIRECTORY_PATH))
+                            self.master.rearrange_cards(None)  # Update the card layout
+                            self.master.create_back_button()  # Show the back button again
+                            print(f"Change directory to: {DIRECTORY_PATH}")
                         else:
-                            # On macOS and Linux, use 'open' to open the file
-                            subprocess.run(["open", file_path])
-                        print(f"Open file: {self.name}")
-                    except Exception as e:
-                        print(f"Error opening file {self.name}: {e}")
+                            print(f"Folder does not exist: {new_directory}")
+                    else:
+                        file_path = os.path.join(DIRECTORY_PATH, self.name)
+                        try:
+                            if platform.system() == "Windows":
+                                # On Windows, use the 'start' command to open files with spaces
+                                subprocess.run(["start", "", file_path], shell=True)
+                            else:
+                                # On macOS and Linux, use 'open' to open the file
+                                subprocess.run(["open", file_path])
+                            print(f"Open file: {self.name}")
+                        except Exception as e:
+                            print(f"Error opening file {self.name}: {e}")
+                except PermissionError:
+                    messagebox.showerror('File Handling Error', 'Error: This is an administor directory, You do not have permission!')
 
             self.click_num = 0
             self.click_timer = None
